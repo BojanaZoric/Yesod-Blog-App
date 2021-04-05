@@ -6,6 +6,10 @@ User
     password Text Maybe
     UniqueUser ident
     deriving Typeable
+Author json
+    firstName Text
+    lastName Text
+    biography Text
 Email
     email Text
     userId UserId Maybe
@@ -14,6 +18,8 @@ Email
 Comment json -- Adding "json" causes ToJSON and FromJSON instances to be derived.
     message Text
     userId UserId Maybe
+    created_at UTCTime Maybe
+    postId PostId
     deriving Eq
     deriving Show
 Tag json
@@ -29,10 +35,16 @@ Post json
     content Text
     image Text Maybe
     published Bool Maybe
-    created_at UTCTime Maybe
+    created_at UTCTime default=CURRENT_TIME
     last_modified UTCTime Maybe
     UniquePost slug
 PostTag json
     postId PostId
     tagId TagId
     --UniquePostTag postId tagId
+Like json
+    postID PostId
+    authorID AuthorId
+Save json
+    postID PostId
+    authorID AuthorId

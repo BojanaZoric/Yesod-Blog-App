@@ -2,14 +2,8 @@ module Handler.Post where
 
 import Import
 
-getPostR :: Handler Value
-getPostR = do
-    dt <- runDB $ selectList [][Asc PostId]
-    returnJson dt
-
-postPostR :: Handler Value
-postPostR = do
-    post <- (requireCheckJsonBody :: Handler Post)
-    insertedPost <- runDB $ insertEntity post
-    returnJson insertedPost
+getPostR :: PostId -> Handler Value
+getPostR postId = do
+    post <- runDB $ get404 postId
+    returnJson post
 

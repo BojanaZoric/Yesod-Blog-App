@@ -14,12 +14,16 @@
 /profile ProfileR GET
 
 /tags TagsR GET POST
-/tag/#TagId TagR GET PUT DELETE
+/tag/#TagId TagR GET DELETE
 
 /categories CategoriesR GET POST
 /category/#CategoryId CategoryR GET PUT DELETE
 
-/post PostR GET POST
-/tag/#TagId/post PostTagR GET POST DELETE
+/posttag/#TagId/ PostTagR GET POST DELETE
 
+/post/#PostId PostR GET
+/posts PostsR GET POST
+
+/post/#PostId/comments PostCommentR GET POST
+/post/#PostId/comment/#CommentId PostCommentsR DELETE
 

@@ -35,6 +35,7 @@ import Network.Wai.Middleware.RequestLogger (Destination (Logger),
                                              IPAddrSource (..),
                                              OutputFormat (..), destination,
                                              mkRequestLogger, outputFormat)
+import Network.Wai.Middleware.Cors
 import System.Log.FastLogger                (defaultBufSize, newStdoutLoggerSet,
                                              toLogStr)
 
@@ -50,6 +51,9 @@ import Handler.Post
 import Handler.PostTag
 import Handler.Tags
 import Handler.Categories
+import Handler.PostComment
+import Handler.PostComments
+import Handler.Posts
 
 -- This line actually creates our YesodDispatch instance. It is the second half
 -- of the call to mkYesodData which occurs in Foundation.hs. Please see the
@@ -100,7 +104,7 @@ makeApplication foundation = do
     logWare <- makeLogWare foundation
     -- Create the WAI application and apply middlewares
     appPlain <- toWaiAppPlain foundation
-    return $ logWare $ defaultMiddlewaresNoLogging appPlain
+    return $ logWare $ defaultMiddlewaresNoLogging $ simpleCors appPlain
 
 makeLogWare :: App -> IO Middleware
 makeLogWare foundation =

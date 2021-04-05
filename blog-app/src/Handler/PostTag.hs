@@ -4,8 +4,8 @@ import Import
 
 getPostTagR :: TagId -> Handler Value
 getPostTagR tagId = do
-    dt <- runDB $ get tagId
-    returnJson dt
+    postTags <- runDB $ selectList [TagId ==. tagId][]
+    returnJson postTags
 
 postPostTagR :: TagId -> Handler Value
 postPostTagR tagId = do
