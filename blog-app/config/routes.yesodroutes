@@ -27,3 +27,5 @@
 /post/#PostId/comments PostCommentR GET POST
 /post/#PostId/comment/#CommentId PostCommentsR DELETE
 
+/author/#AuthorId AuthorR GET PUT DELETE
+/authors AuthorsR GET POST
