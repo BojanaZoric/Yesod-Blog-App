@@ -4,6 +4,7 @@ import Import
 
 getPostR :: PostId -> Handler Value
 getPostR postId = do
-    post <- runDB $ get404 postId
-    returnJson post
+    maybePost <- runDB $ get404 postId
+    comments <- runDB $ selectList [CommentPostId ==. postId][]
+    returnJson (maybePost, comments)
 

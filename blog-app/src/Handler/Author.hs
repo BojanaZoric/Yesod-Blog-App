@@ -2,11 +2,19 @@ module Handler.Author where
 
 import Import
 
-getAuthorR :: AuthorId -> Handler Html
-getAuthorR authorId = error "Not yet implemented: getAuthorR"
+getAuthorR :: AuthorId -> Handler Value
+getAuthorR authorId = do
+    maybeAuthor <- runDB $ get404 authorId
+    returnJson maybeAuthor
 
 putAuthorR :: AuthorId -> Handler Html
 putAuthorR authorId = error "Not yet implemented: putAuthorR"
 
-deleteAuthorR :: AuthorId -> Handler Html
-deleteAuthorR authorId = error "Not yet implemented: deleteAuthorR"
+deleteAuthorR :: AuthorId -> Handler Value
+deleteAuthorR authorId = do
+    maybeAuthor <- runDB $ get authorId
+    case maybeAuthor of
+        Nothing -> error ""
+        Just author -> do
+            runDB $ delete authorId
+            returnJson author

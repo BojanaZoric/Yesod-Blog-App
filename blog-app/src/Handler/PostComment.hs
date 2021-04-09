@@ -8,7 +8,7 @@ getPostCommentR postId = do
     returnJson comments
 
 postPostCommentR :: PostId -> Handler Value
-postPostCommentR postId = error "Not yet implemented: postPostCommentR"
+postPostCommentR postId = error ""
 
 deletePostCommentR :: PostId -> Handler Html
 deletePostCommentR postId = error "Not yet implemented: deletePostCommentR"

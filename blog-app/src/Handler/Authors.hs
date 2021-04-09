@@ -7,5 +7,8 @@ getAuthorsR = do
     authors <- runDB $ selectList [][Asc AuthorLastName]
     returnJson authors
 
-postAuthorsR :: Handler Html
-postAuthorsR = error "Not yet implemented: postAuthorsR"
+postAuthorsR :: Handler Value
+postAuthorsR = do
+    author <- (requireCheckJsonBody :: Handler Author)
+    insertedAuthor <- runDB $ insertEntity author
+    returnJson insertedAuthor
