@@ -1,11 +1,18 @@
 module Handler.PostTag where
 
 import Import
+import qualified Database.Esqueleto as E
 
 getPostTagR :: TagId -> Handler Value
 getPostTagR tagId = do
-    postTags <- runDB $ selectList [TagId ==. tagId][]
-    returnJson postTags
+    tag <- runDB $ get tagId
+    posts <- runDB
+        $ E.select
+        $ E.from $ \(post `E.InnerJoin` relation) -> do
+            E.on $ post E.^. PostId E.==. relation E.^. PostTagPostId
+            E.where_ $ relation E.^. PostTagTagId E.==. E.val tagId
+            return post
+    returnJson (tag, posts)
 
 postPostTagR :: TagId -> Handler Value
 postPostTagR tagId = do

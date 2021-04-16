@@ -1,6 +1,8 @@
 module Handler.Posts where
 
 import Import
+import qualified Database.Esqueleto as E
+import Database.Esqueleto ((^.))
 
 getPostsR :: Handler Value
 getPostsR = do

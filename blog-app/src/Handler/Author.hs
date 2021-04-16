@@ -5,7 +5,8 @@ import Import
 getAuthorR :: AuthorId -> Handler Value
 getAuthorR authorId = do
     maybeAuthor <- runDB $ get404 authorId
-    returnJson maybeAuthor
+    writenPosts <- runDB $ selectList[PostAuthorId ==. authorId][]
+    returnJson (maybeAuthor, writenPosts)
 
 putAuthorR :: AuthorId -> Handler Html
 putAuthorR authorId = error "Not yet implemented: putAuthorR"

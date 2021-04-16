@@ -37,6 +37,7 @@ Category json
     UniqueCategory name
 Post json
     Id
+    authorId AuthorId
     title Text
     slug Text
     content Text
@@ -50,10 +51,14 @@ PostTag json
     postId PostId
     tagId TagId
     --UniquePostTag postId tagId
+CategoryPost json
+    Id
+    postId PostId
+    categoryId CategoryId
 PostLike json
     Id
-    postId PostId Maybe
-    authorId AuthorId Maybe
+    postId PostId
+    authorId AuthorId
     --UniqueLike postId authorId
 PostSave json
     Id

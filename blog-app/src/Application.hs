@@ -56,6 +56,10 @@ import Handler.PostComments
 import Handler.Posts
 import Handler.Author
 import Handler.Authors
+import Handler.CategoryPost
+import Handler.PostLike
+import Handler.LikedPosts
+import Handler.SavedPosts
 
 -- This line actually creates our YesodDispatch instance. It is the second half
 -- of the call to mkYesodData which occurs in Foundation.hs. Please see the
