@@ -34,3 +34,5 @@
 /like/#PostId PostLikeR POST DELETE
 /likedPosts/#AuthorId LikedPostsR GET
 /savedPosts/#AuthorId SavedPostsR GET
+/user UserR GET POST
+

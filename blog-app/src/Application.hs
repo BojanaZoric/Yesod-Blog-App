@@ -60,6 +60,20 @@ import Handler.CategoryPost
 import Handler.PostLike
 import Handler.LikedPosts
 import Handler.SavedPosts
+import Handler.User
+
+import qualified Prelude                              as P
+import System.Environment (lookupEnv)
+
+allowCors :: Middleware
+allowCors = cors (const $ Just appCorsResourcePolicy)
+
+appCorsResourcePolicy :: CorsResourcePolicy
+appCorsResourcePolicy =
+    simpleCorsResourcePolicy
+        { corsMethods = ["OPTIONS", "GET", "PUT", "POST", "DELETE"]
+        , corsRequestHeaders = ["Authorization", "Content-Type"]
+        }
 
 -- This line actually creates our YesodDispatch instance. It is the second half
 -- of the call to mkYesodData which occurs in Foundation.hs. Please see the
@@ -110,7 +124,7 @@ makeApplication foundation = do
     logWare <- makeLogWare foundation
     -- Create the WAI application and apply middlewares
     appPlain <- toWaiAppPlain foundation
-    return $ logWare $ defaultMiddlewaresNoLogging $ simpleCors appPlain
+    return $ logWare $ defaultMiddlewaresNoLogging $ allowCors $ appPlain
 
 makeLogWare :: App -> IO Middleware
 makeLogWare foundation =
@@ -152,6 +166,14 @@ getApplicationDev = do
 
 getAppSettings :: IO AppSettings
 getAppSettings = loadYamlSettings [configSettingsYml] [] useEnv
+
+checkEnvironment :: IO ()
+checkEnvironment = do
+  mJwtSecret <- lookupEnv "JWT_SECRET"
+  case mJwtSecret of
+    Nothing ->
+      P.errorWithoutStackTrace "Set the \"JWT_SECRET\" environment variable"
+    _ -> return ()
 
 -- | main function for use by yesod devel
 develMain :: IO ()
