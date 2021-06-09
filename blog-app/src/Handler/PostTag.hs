@@ -16,10 +16,9 @@ getPostTagR tagId = do
 
 postPostTagR :: TagId -> Handler Value
 postPostTagR tagId = do
-    --tag <- runDB $ get tagId
     postTag <- (requireCheckJsonBody :: Handler PostTag)
     insertedPostTag <- runDB $ insertEntity postTag
     returnJson insertedPostTag
 
-deletePostTagR :: TagId -> Handler Html
+deletePostTagR :: TagId -> Handler Value
 deletePostTagR tagId = error "Not yet implemented: deletePostTagR"

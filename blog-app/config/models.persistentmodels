@@ -40,7 +40,7 @@ Post json
     authorId AuthorId
     title Text
     slug Text
-    content Text
+    content Text Maybe
     image Text Maybe
     published Bool Maybe
     --created_at UTCTime default=CURRENT_TIME
@@ -50,11 +50,12 @@ PostTag json
     Id
     postId PostId
     tagId TagId
-    --UniquePostTag postId tagId
+    UniquePostTag postId tagId
 CategoryPost json
     Id
     postId PostId
     categoryId CategoryId
+    UniquePostCategory postId categoryId
 PostLike json
     Id
     postId PostId

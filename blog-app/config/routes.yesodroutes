@@ -21,7 +21,7 @@
 
 /posttag/#TagId/ PostTagR GET POST DELETE
 
-/post/#PostId PostR GET
+/post/#PostId PostR GET PUT
 /posts PostsR GET POST
 
 /post/#PostId/comments PostCommentR GET POST
@@ -36,3 +36,7 @@
 /savedPosts/#AuthorId SavedPostsR GET
 /user UserR GET POST
 
+/postCategory PostCategoryR POST
+/tagPost TagPostR POST
+/postTagRemove/#PostTagId RemoveTagPostR DELETE
+/categoryPostRemove/#CategoryPostId RemoveCategoryPostR DELETE

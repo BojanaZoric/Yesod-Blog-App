@@ -12,6 +12,7 @@ getCategoriesR ::  Handler Value
 getCategoriesR = do
     offsetMaybe <- lookupGetParam "offset"
     limitMaybe <- lookupGetParam "limit"
+    total <- runDB $ count[CategoryName !=. ""]
     case limitMaybe of
         Just limit -> do
             case offsetMaybe of
@@ -21,18 +22,18 @@ getCategoriesR = do
                         E.limit (read (fromText $ limit) :: Int64)
                         E.offset (read (fromText $ offset) :: Int64)
                         return category
-                    returnJson categories
+                    returnJson (categories, total)
                 Nothing -> do
                     categories <- runDB $ E.select $ E.from $ \category -> do
                         E.orderBy [E.asc (category E.^. CategoryId)]
                         E.limit (read (fromText $ limit) :: Int64)
                         return category
-                    returnJson categories
+                    returnJson (categories, total)
         Nothing ->  do
             categories <- runDB $ E.select $ E.from $ \category -> do
                 E.orderBy [E.asc (category E.^. CategoryId)]
                 return (category)
-            returnJson (categories)
+            returnJson (categories, total)
     
 
 postCategoriesR :: Handler Value

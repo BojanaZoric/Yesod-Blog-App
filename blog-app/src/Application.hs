@@ -61,6 +61,10 @@ import Handler.PostLike
 import Handler.LikedPosts
 import Handler.SavedPosts
 import Handler.User
+import Handler.PostCategory
+import Handler.TagPost
+import Handler.RemoveTagPost
+import Handler.RemoveCategoryPost
 
 import qualified Prelude                              as P
 import System.Environment (lookupEnv)
