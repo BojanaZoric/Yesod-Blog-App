@@ -1,38 +1,67 @@
 -- By default this file is used by `persistFileWith` in Model.hs (which is imported by Foundation.hs)
 -- Syntax for this file here: https://github.com/yesodweb/persistent/blob/master/docs/Persistent-entity-syntax.md
 
-User
-    ident Text
+User json
+    Id
+    username Text
     password Text Maybe
-    UniqueUser ident
+    UniqueUser username
     deriving Typeable
+Author json
+    Id
+    firstName Text
+    lastName Text
+    biography Text Maybe
+    userId UserId
 Email
     email Text
     userId UserId Maybe
     verkey Text Maybe
     UniqueEmail email
 Comment json -- Adding "json" causes ToJSON and FromJSON instances to be derived.
+    Id
     message Text
     userId UserId Maybe
+    created_at UTCTime Maybe
+    postId PostId
     deriving Eq
     deriving Show
 Tag json
+    Id
     name Text
     UniqueTag name
 Category json
+    Id
     name Text
     parentCategory CategoryId Maybe
     UniqueCategory name
 Post json
+    Id
+    authorId AuthorId
     title Text
     slug Text
-    content Text
+    content Text Maybe
     image Text Maybe
     published Bool Maybe
-    created_at UTCTime Maybe
-    last_modified UTCTime Maybe
+    --created_at UTCTime default=CURRENT_TIME
+    --last_modified UTCTime Maybe
     UniquePost slug
 PostTag json
+    Id
     postId PostId
     tagId TagId
-    --UniquePostTag postId tagId
+    UniquePostTag postId tagId
+CategoryPost json
+    Id
+    postId PostId
+    categoryId CategoryId
+    UniquePostCategory postId categoryId
+PostLike json
+    Id
+    postId PostId
+    authorId AuthorId
+    --UniqueLike postId authorId
+PostSave json
+    Id
+    postId PostId
+    authorId AuthorId

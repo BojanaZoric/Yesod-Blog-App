@@ -1,14 +1,44 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Handler.Tags where
 
 import Import
+import Text.Read
+import Data.Text.Conversions
+import qualified Database.Esqueleto as E
 
 getTagsR :: Handler Value
 getTagsR = do
-    tags <- runDB $ selectList [][Asc TagName]
-    returnJson tags
+    offsetMaybe <- lookupGetParam "offset"
+    limitMaybe <- lookupGetParam "limit"
+    case limitMaybe of
+        Just limit -> do
+            case offsetMaybe of
+                Just offset -> do
+                    tags <- runDB $ E.select $ E.from $ \tag -> do
+                        E.orderBy [E.asc (tag E.^. TagId)]
+                        E.limit (read (fromText $ limit) :: Int64)
+                        E.offset (read (fromText $ offset) :: Int64)
+                        return tag
+                    total <- runDB $ count[TagName !=. ""]
+                    returnJson (tags, total)
+                Nothing -> do
+                    tags <- runDB $ E.select $ E.from $ \tag -> do
+                        E.orderBy [E.asc (tag E.^. TagId)]
+                        E.limit (read (fromText $ limit) :: Int64)
+                        return tag
+                    total <- runDB $ count[TagName !=. ""]
+                    returnJson (tags, total)
+        Nothing ->  do
+            tags <- runDB $ E.select $ E.from $ \tag -> do
+                E.orderBy [E.asc (tag E.^. TagId)]
+                return (tag)
+            total <- runDB $ count[TagName !=. ""]
+            returnJson (tags, total)
 
 postTagsR :: Handler Value
 postTagsR = do
+    liftIO (Prelude.print "tag")
     tag <- (requireCheckJsonBody :: Handler Tag)
     insertedTag <- runDB $ insertEntity tag
     returnJson insertedTag
