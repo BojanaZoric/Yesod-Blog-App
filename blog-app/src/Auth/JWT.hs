@@ -1,23 +1,32 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-
-module Auth.JWT where
+
+module Auth.JWT
+  ( lookupToken
+  , jsonToToken
+  , tokenToJson
+  )
+  where
 
 import           ClassyPrelude.Yesod
 import           Data.Char           (isSpace)
 import           Data.Map             as Map (fromList, (!?))
 import           Web.JWT              as JWT
+import qualified Prelude as P
 
-lookupToken :: MonadHandler m => (Maybe Text)
-lookupToken = do 
-    mAuth <- lookupHeader "Authorization"
-    return $ extractToken . decodeUtf8 =<< mAuth
+-- | Try to lookup token from the Authorization header
+lookupToken :: MonadHandler m => m (Maybe Text)
+lookupToken = do
+  liftIO (P.print "tag")
+  mAuth <- lookupHeader "Authorization"
+  return $ extractToken . decodeUtf8 =<< mAuth
 
+-- | Create a token out of a given JSON 'Value'
 jsonToToken :: Text -> Value -> Text
-jsonToToken jwtSecret userId = 
-    encodeSigned (JWT.hmacSecret jwtSecret) 
-        mempty {unregisteredClaims = ClaimsMap $ Map.fromList[(jwtKey, userId)]}
+jsonToToken jwtSecret userId = do
+  encodeSigned (JWT.hmacSecret jwtSecret) mempty mempty {unregisteredClaims = ClaimsMap $ Map.fromList [(jwtKey, userId)]}
 
+-- | Extract a JSON 'Value' out of a token
 tokenToJson :: Text -> Text -> Maybe Value
 tokenToJson jwtSecret token = do
     jwt <- JWT.decodeAndVerifySignature (JWT.hmacSecret jwtSecret) token
@@ -31,4 +40,3 @@ extractToken auth
   | toLower x == "token" = Just $ dropWhile isSpace y
   | otherwise            = Nothing
   where (x, y) = break isSpace auth
-  -}

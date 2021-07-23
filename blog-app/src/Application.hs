@@ -69,6 +69,7 @@ import Handler.RemoveCategoryPost
 import qualified Prelude                              as P
 import System.Environment (lookupEnv)
 
+{-
 allowCors :: Middleware
 allowCors = cors (const $ Just appCorsResourcePolicy)
 
@@ -78,7 +79,7 @@ appCorsResourcePolicy =
         { corsMethods = ["OPTIONS", "GET", "PUT", "POST", "DELETE"]
         , corsRequestHeaders = ["Authorization", "Content-Type"]
         }
-
+-}
 -- This line actually creates our YesodDispatch instance. It is the second half
 -- of the call to mkYesodData which occurs in Foundation.hs. Please see the
 -- comments there for more details.
@@ -128,7 +129,24 @@ makeApplication foundation = do
     logWare <- makeLogWare foundation
     -- Create the WAI application and apply middlewares
     appPlain <- toWaiAppPlain foundation
-    return $ logWare $ defaultMiddlewaresNoLogging $ allowCors $ appPlain
+    settings <- getAppSettings
+    return $ logWare $ defaultMiddlewaresNoLogging $ corsified appPlain
+
+corsified :: Middleware
+corsified = cors (const $ Just appCorsResourcePolicy)
+
+-- | CORS resource policy to be used with 'corsified' middleware.
+appCorsResourcePolicy :: CorsResourcePolicy
+appCorsResourcePolicy  = CorsResourcePolicy {
+    corsOrigins        = Nothing --Just (encodeUtf8 <$> corsWhitelist, False)
+  , corsMethods        = ["OPTIONS", "GET", "PUT", "POST", "DELETE"]
+  , corsRequestHeaders = ["Authorization", "Content-Type"]
+  , corsExposedHeaders = Nothing
+  , corsMaxAge         = Nothing
+  , corsVaryOrigin     = False
+  , corsRequireOrigin  = False
+  , corsIgnoreFailures = False
+}
 
 makeLogWare :: App -> IO Middleware
 makeLogWare foundation =
@@ -169,7 +187,9 @@ getApplicationDev = do
     return (wsettings, app)
 
 getAppSettings :: IO AppSettings
-getAppSettings = loadYamlSettings [configSettingsYml] [] useEnv
+getAppSettings = do
+    checkEnvironment
+    loadYamlSettings [configSettingsYml] [] useEnv
 
 checkEnvironment :: IO ()
 checkEnvironment = do
