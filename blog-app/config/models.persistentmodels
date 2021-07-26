@@ -4,7 +4,9 @@
 User json
     Id
     username Text
-    password Text Maybe
+    email Text
+    password Password
+    role Text
     UniqueUser username
     deriving Typeable
 Author json
@@ -13,11 +15,6 @@ Author json
     lastName Text
     biography Text Maybe
     userId UserId
-Email
-    email Text
-    userId UserId Maybe
-    verkey Text Maybe
-    UniqueEmail email
 Comment json -- Adding "json" causes ToJSON and FromJSON instances to be derived.
     Id
     message Text

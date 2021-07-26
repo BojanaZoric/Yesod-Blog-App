@@ -31,6 +31,8 @@ import qualified Yesod.Core.Unsafe as Unsafe
 import qualified Data.CaseInsensitive as CI
 import qualified Data.Text.Encoding as TE
 
+import qualified Prelude as P
+
 -- | The foundation datatype for your application. This can be a good place to
 -- keep settings and values requiring initialization before your application
 -- starts running, such as database connections. Every handler will have
@@ -115,6 +117,8 @@ instance Yesod App where
         -> Handler AuthResult
     -- Routes not requiring authentication.
     isAuthorized (AuthR _) _ = return Authorized
+    isAuthorized UserLoginR _ = return Authorized
+    isAuthorized UserRegisterR _ = return Authorized
     isAuthorized CommentR _ = return Authorized
     isAuthorized HomeR _ = return Authorized
     isAuthorized FaviconR _ = return Authorized
@@ -126,7 +130,20 @@ instance Yesod App where
     -- the profile route requires that the user is authenticated, so we
     -- delegate to that function
     isAuthorized ProfileR _ = isAuthenticated
-    isAuthorized CategoriesR _ = isAuthenticated
+    isAuthorized CategoriesR _ = isAuthenticated{-do
+        mau <- maybeAuthId
+        case mau of 
+            Nothing -> return AuthenticationRequired
+            Just usId -> do
+                currUser <- runDB $ get usId
+                case currUser of
+                    Nothing -> return AuthenticationRequired
+                    Just cu -> do
+                        if userRole cu == "admin"
+                            then return Authorized
+                        else return AuthenticationRequired
+
+-}
 
     -- This function creates static content files in the static folder
     -- and names them based on a hash of their content. This allows
@@ -202,7 +219,7 @@ instance YesodAuth App where
     redirectToReferer :: App -> Bool
     redirectToReferer _ = True
 
-    authenticate :: (MonadHandler m, HandlerSite m ~ App)
+    {-authenticate :: (MonadHandler m, HandlerSite m ~ App)
                  => Creds App -> m (AuthenticationResult App)
     authenticate creds = liftHandler $ runDB $ do
         x <- getBy $ UniqueUser $ credsIdent creds
@@ -212,7 +229,9 @@ instance YesodAuth App where
                 { userUsername = credsIdent creds
                 , userPassword = Nothing
                 }
-
+-}
+    authenticate _ =
+        maybe (UserError AuthMsg.InvalidLogin) Authenticated <$> maybeAuthId
     -- You can add other plugins like Google Email, email or OAuth here
     authPlugins :: App -> [AuthPlugin App]
     authPlugins app = [authOpenId Claimed []] ++ extraAuthPlugins
@@ -221,6 +240,7 @@ instance YesodAuth App where
 
     maybeAuthId = do
         mToken <- JWT.lookupToken
+        liftIO (P.print mToken)
         liftHandler $ maybe (return Nothing) tokenToUserId mToken
 
 -- | Access function to determine if a user is logged in.
@@ -266,6 +286,8 @@ tokenToUserId :: Text -> Handler (Maybe UserId)
 tokenToUserId token = do
   jwtSecret <- getJwtSecret
   let mUserId = fromJSON <$> JWT.tokenToJson jwtSecret token
+  --liftIO (P.print "bla")
+  liftIO (P.print mUserId)
   case mUserId of
     Just (Success userId) -> return $ Just userId
     _                     -> return Nothing
@@ -273,3 +295,10 @@ tokenToUserId token = do
 getJwtSecret :: HandlerFor App Text
 getJwtSecret =
   getsYesod $ appJwtSecret . appSettings
+
+--isAdmin :: User -> Bool
+--isAdmin user = userRole user == "admin"
+
+
+isAuthor :: User -> Bool
+isAuthor user = userRole user == "author"

@@ -17,8 +17,8 @@ import qualified Prelude as P
 -- | Try to lookup token from the Authorization header
 lookupToken :: MonadHandler m => m (Maybe Text)
 lookupToken = do
-  liftIO (P.print "tag")
   mAuth <- lookupHeader "Authorization"
+  liftIO (P.print (extractToken . decodeUtf8 =<< mAuth))
   return $ extractToken . decodeUtf8 =<< mAuth
 
 -- | Create a token out of a given JSON 'Value'
@@ -37,6 +37,6 @@ jwtKey = "jwt"
 
 extractToken :: Text -> Maybe Text
 extractToken auth
-  | toLower x == "token" = Just $ dropWhile isSpace y
+  | toLower x == "bearer" = Just $ dropWhile isSpace y
   | otherwise            = Nothing
   where (x, y) = break isSpace auth

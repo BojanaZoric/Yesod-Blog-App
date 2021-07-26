@@ -35,6 +35,8 @@
 /likedPosts/#AuthorId LikedPostsR GET
 /savedPosts/#AuthorId SavedPostsR GET
 /user UserR GET POST
+/user/login UserLoginR POST
+/user/register UserRegisterR POST
 
 /postCategory PostCategoryR POST
 /tagPost TagPostR POST
