@@ -13,7 +13,7 @@ Author json
     Id
     firstName Text
     lastName Text
-    biography Text Maybe
+    biography Text
     userId UserId
 Comment json -- Adding "json" causes ToJSON and FromJSON instances to be derived.
     Id

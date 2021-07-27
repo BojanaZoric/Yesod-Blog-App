@@ -126,11 +126,23 @@ instance Yesod App where
     isAuthorized (StaticR _) _ = return Authorized
     --isAuthorized _ _ = return Authorized
     isAuthorized PostsR _ = return Authorized
+    
 
     -- the profile route requires that the user is authenticated, so we
     -- delegate to that function
     isAuthorized ProfileR _ = isAuthenticated
-    isAuthorized CategoriesR _ = isAuthenticated{-do
+    isAuthorized CategoriesR True = isAdmin
+    isAuthorized CategoriesR _ = return Authorized
+    isAuthorized (CategoryR _) _ = isAdmin
+    isAuthorized PostsR True = isAuthor
+    isAuthorized PostsR _ = return Authorized
+    isAuthorized (PostTagR _) True = isAuthor
+    isAuthorized (PostTagR _) _ = return Authorized
+
+    isAuthorized (CategoryPostR _) _ = return Authorized
+
+
+    {-do
         mau <- maybeAuthId
         case mau of 
             Nothing -> return AuthenticationRequired
@@ -143,8 +155,8 @@ instance Yesod App where
                             then return Authorized
                         else return AuthenticationRequired
 
--}
 
+-}
     -- This function creates static content files in the static folder
     -- and names them based on a hash of their content. This allows
     -- expiration dates to be set far in the future without worry of
@@ -282,12 +294,13 @@ userIdToToken userId = do
   jwtSecret <- getJwtSecret
   return $ JWT.jsonToToken jwtSecret $ toJSON userId
 
+
 tokenToUserId :: Text -> Handler (Maybe UserId)
 tokenToUserId token = do
   jwtSecret <- getJwtSecret
   let mUserId = fromJSON <$> JWT.tokenToJson jwtSecret token
   --liftIO (P.print "bla")
-  liftIO (P.print mUserId)
+  liftIO (P.print token)
   case mUserId of
     Just (Success userId) -> return $ Just userId
     _                     -> return Nothing
@@ -296,9 +309,31 @@ getJwtSecret :: HandlerFor App Text
 getJwtSecret =
   getsYesod $ appJwtSecret . appSettings
 
---isAdmin :: User -> Bool
---isAdmin user = userRole user == "admin"
+isAdmin :: Handler AuthResult
+isAdmin = do
+        mau <- maybeAuthId
+        case mau of 
+            Nothing -> return AuthenticationRequired
+            Just usId -> do
+                currUser <- runDB $ get usId
+                case currUser of
+                    Nothing -> return AuthenticationRequired
+                    Just cu -> do
+                        if userRole cu == "admin"
+                            then return Authorized
+                        else return AuthenticationRequired
 
 
-isAuthor :: User -> Bool
-isAuthor user = userRole user == "author"
+isAuthor :: Handler AuthResult
+isAuthor = do
+        mau <- maybeAuthId
+        case mau of 
+            Nothing -> return AuthenticationRequired
+            Just usId -> do
+                currUser <- runDB $ get usId
+                case currUser of
+                    Nothing -> return AuthenticationRequired
+                    Just cu -> do
+                        if userRole cu == "author"
+                            then return Authorized
+                        else return AuthenticationRequired
