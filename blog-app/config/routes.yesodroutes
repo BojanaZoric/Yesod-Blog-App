@@ -11,8 +11,6 @@
 
 /comments CommentR POST
 
-/profile ProfileR GET
-
 /tags TagsR GET POST
 /tag/#TagId TagR GET DELETE
 
@@ -37,6 +35,9 @@
 /user UserR GET POST
 /user/login UserLoginR POST
 /user/register UserRegisterR POST
+
+/user/profile ProfileR GET
+/user/myPosts MyPostsR GET
 
 /postCategory PostCategoryR POST
 /tagPost TagPostR POST

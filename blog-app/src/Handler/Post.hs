@@ -9,7 +9,7 @@ getPostR postId = do
     author <- runDB 
         $ E.select $
         E.from $ \(p, a) -> do
-        E.where_ (p E.^. PostAuthorId E.==. a E.^. AuthorId)
+        E.where_ (p E.^. PostAuthorId E.==. a E.^. UserId)
         E.where_ (p E.^. PostId E.==. E.val postId)
         return (a)
     comments <- runDB $ selectList [CommentPostId ==. postId][]

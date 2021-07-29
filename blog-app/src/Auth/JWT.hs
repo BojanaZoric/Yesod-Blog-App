@@ -18,7 +18,6 @@ import qualified Prelude as P
 lookupToken :: MonadHandler m => m (Maybe Text)
 lookupToken = do
   mAuth <- lookupHeader "Authorization"
-  liftIO (P.print (extractToken . decodeUtf8 =<< mAuth))
   return $ extractToken . decodeUtf8 =<< mAuth
 
 -- | Create a token out of a given JSON 'Value'

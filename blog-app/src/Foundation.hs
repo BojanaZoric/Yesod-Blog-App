@@ -141,22 +141,15 @@ instance Yesod App where
 
     isAuthorized (CategoryPostR _) _ = return Authorized
 
+    isAuthorized TagsR True = isAuthor
+    isAuthorized TagsR _ = return Authorized
 
-    {-do
-        mau <- maybeAuthId
-        case mau of 
-            Nothing -> return AuthenticationRequired
-            Just usId -> do
-                currUser <- runDB $ get usId
-                case currUser of
-                    Nothing -> return AuthenticationRequired
-                    Just cu -> do
-                        if userRole cu == "admin"
-                            then return Authorized
-                        else return AuthenticationRequired
+    isAuthorized (PostR _) True = isAuthor
+    isAuthorized (PostR _) _ = return Authorized
+
+    isAuthorized MyPostsR _ = isAuthor
 
 
--}
     -- This function creates static content files in the static folder
     -- and names them based on a hash of their content. This allows
     -- expiration dates to be set far in the future without worry of
@@ -252,7 +245,6 @@ instance YesodAuth App where
 
     maybeAuthId = do
         mToken <- JWT.lookupToken
-        liftIO (P.print mToken)
         liftHandler $ maybe (return Nothing) tokenToUserId mToken
 
 -- | Access function to determine if a user is logged in.
@@ -299,8 +291,6 @@ tokenToUserId :: Text -> Handler (Maybe UserId)
 tokenToUserId token = do
   jwtSecret <- getJwtSecret
   let mUserId = fromJSON <$> JWT.tokenToJson jwtSecret token
-  --liftIO (P.print "bla")
-  liftIO (P.print token)
   case mUserId of
     Just (Success userId) -> return $ Just userId
     _                     -> return Nothing

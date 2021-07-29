@@ -81,7 +81,8 @@ postUserRegisterR :: Handler Value
 postUserRegisterR = do
     registerData <- (requireCheckJsonBody:: Handler Register)
     hashedPwd <- mkPassword (registerPassword registerData)
-    let user = User (registerUsername registerData) ( registerEmail registerData) hashedPwd "author"
+    now <- liftIO getCurrentTime
+    let user = User (registerUsername registerData) ( registerEmail registerData) hashedPwd "author" now now
     insertedUser <- runDB $ insert400 user
     let author = Author (firstName registerData) (lastName registerData) (biography registerData) insertedUser
     insertedAuthor <- runDB $ insert400 author

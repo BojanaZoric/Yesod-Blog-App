@@ -44,7 +44,6 @@ import System.Log.FastLogger                (defaultBufSize, newStdoutLoggerSet,
 import Handler.Common
 import Handler.Home
 import Handler.Comment
-import Handler.Profile
 import Handler.Tag
 import Handler.Category
 import Handler.Post
@@ -69,17 +68,6 @@ import Handler.RemoveCategoryPost
 import qualified Prelude                              as P
 import System.Environment (lookupEnv)
 
-{-
-allowCors :: Middleware
-allowCors = cors (const $ Just appCorsResourcePolicy)
-
-appCorsResourcePolicy :: CorsResourcePolicy
-appCorsResourcePolicy =
-    simpleCorsResourcePolicy
-        { corsMethods = ["OPTIONS", "GET", "PUT", "POST", "DELETE"]
-        , corsRequestHeaders = ["Authorization", "Content-Type"]
-        }
--}
 -- This line actually creates our YesodDispatch instance. It is the second half
 -- of the call to mkYesodData which occurs in Foundation.hs. Please see the
 -- comments there for more details.

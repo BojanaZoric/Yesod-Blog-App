@@ -7,6 +7,8 @@ import Text.Read
 import Data.Text.Conversions
 import qualified Database.Esqueleto as E
 import Database.Esqueleto ((^.))
+import Dto.PostDTO
+
 
 getPostsR :: Handler Value
 getPostsR = do
@@ -38,7 +40,13 @@ getPostsR = do
 
 postPostsR :: Handler Value
 postPostsR = do
-    post <- (requireCheckJsonBody :: Handler Post)
-    insertedPost <- runDB $ insertEntity post
-    returnJson insertedPost
+    postDto <- (requireCheckJsonBody :: Handler CreatePostDto)
+    maybeCurrentUserId <- maybeAuthId
+    case maybeCurrentUserId of
+        Nothing -> notAuthenticated
+        Just currentUserId -> do
+            now <- liftIO getCurrentTime
+            let post = Post (title postDto) (slug postDto) (content postDto) (image postDto) (published postDto) now now currentUserId
+            insertedPost <- runDB $ insertEntity post
+            returnJson insertedPost
 
