@@ -52,6 +52,7 @@ data AppSettings = AppSettings
     -- ^ Assume that files in the static dir may change after compilation
     , appSkipCombining          :: Bool
     -- ^ Perform no stylesheet/script combining
+    , appJwtSecret              :: Text
 
     -- Example app-specific configuration values.
     , appCopyright              :: Text
@@ -86,6 +87,7 @@ instance FromJSON AppSettings where
         appMutableStatic          <- o .:? "mutable-static"   .!= dev
         appSkipCombining          <- o .:? "skip-combining"   .!= dev
 
+        appJwtSecret              <- o .:  "jwt-secret"
         appCopyright              <- o .:  "copyright"
         appAnalytics              <- o .:? "analytics"
 

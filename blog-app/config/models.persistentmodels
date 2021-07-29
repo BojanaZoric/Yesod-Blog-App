@@ -4,20 +4,20 @@
 User json
     Id
     username Text
-    password Text Maybe
+    email Text
+    password Password
+    role Text
+    created_at UTCTime
+    updated_at UTCTime
     UniqueUser username
     deriving Typeable
 Author json
     Id
     firstName Text
     lastName Text
-    biography Text Maybe
+    biography Text
     userId UserId
-Email
-    email Text
-    userId UserId Maybe
-    verkey Text Maybe
-    UniqueEmail email
+    UniqueAuthorUser userId
 Comment json -- Adding "json" causes ToJSON and FromJSON instances to be derived.
     Id
     message Text
@@ -37,14 +37,14 @@ Category json
     UniqueCategory name
 Post json
     Id
-    authorId AuthorId
     title Text
     slug Text
-    content Text Maybe
-    image Text Maybe
-    published Bool Maybe
-    --created_at UTCTime default=CURRENT_TIME
-    --last_modified UTCTime Maybe
+    content Text
+    image Text
+    published Bool
+    created_at UTCTime
+    last_modified UTCTime
+    authorId UserId
     UniquePost slug
 PostTag json
     Id
@@ -59,9 +59,9 @@ CategoryPost json
 PostLike json
     Id
     postId PostId
-    authorId AuthorId
+    authorId UserId
     --UniqueLike postId authorId
 PostSave json
     Id
     postId PostId
-    authorId AuthorId
+    authorId UserId
