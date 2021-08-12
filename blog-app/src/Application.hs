@@ -64,6 +64,8 @@ import Handler.PostCategory
 import Handler.TagPost
 import Handler.RemoveTagPost
 import Handler.RemoveCategoryPost
+import Handler.SavePost
+import Handler.PostsYear
 
 import qualified Prelude                              as P
 import System.Environment (lookupEnv)
@@ -105,6 +107,7 @@ makeFoundation appSettings = do
         (sqlPoolSize $ appDatabaseConf appSettings)
 
     -- Perform database migration using our application's logging settings.
+    
     runLoggingT (runSqlPool (runMigration migrateAll) pool) logFunc
 
     -- Return the foundation

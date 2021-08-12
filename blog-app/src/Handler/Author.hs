@@ -1,7 +1,11 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Handler.Author where
 
 import Import
 import Dto.AuthorDTO
+import qualified Text.Read as Read
+import Data.Text.Conversions
 
 getAuthorR :: AuthorId -> Handler Value
 getAuthorR authorId = do
@@ -27,12 +31,25 @@ getProfileR = do
 
 getMyPostsR :: Handler Value
 getMyPostsR = do
+    offsetMaybe <- lookupGetParam "offset"
+    limitMaybe <- lookupGetParam "limit"
     maybeCurrentUserId <- maybeAuthId
     case maybeCurrentUserId of
         Nothing -> notAuthenticated
         Just currentUserId -> do
-            writenPosts <- runDB $ selectList[PostAuthorId ==. currentUserId][]
-            returnJson writenPosts
+            total <- runDB $ count[PostAuthorId ==. currentUserId]
+            case limitMaybe of
+                Just limit -> do
+                    case offsetMaybe of
+                        Just offset -> do
+                            writenPosts <- runDB $ selectList[PostAuthorId ==. currentUserId][OffsetBy (Read.read (fromText $ offset) :: Int), LimitTo (Read.read (fromText $ limit) :: Int)]
+                            returnJson (writenPosts, total)
+                        Nothing -> do
+                            writenPosts <- runDB $ selectList[PostAuthorId ==. currentUserId][LimitTo (Read.read (fromText $ limit) :: Int)]
+                            returnJson (writenPosts, total)
+                Nothing -> do
+                    writenPosts <- runDB $ selectList[PostAuthorId ==. currentUserId][]
+                    returnJson (writenPosts, total)
 
 putAuthorR :: AuthorId -> Handler Html
 putAuthorR authorId = error "Not yet implemented: putAuthorR"

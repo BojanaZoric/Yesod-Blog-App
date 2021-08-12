@@ -31,7 +31,7 @@
 
 /like/#PostId PostLikeR POST DELETE
 /likedPosts/#AuthorId LikedPostsR GET
-/savedPosts/#AuthorId SavedPostsR GET
+/savedPosts SavedPostsR GET
 /user UserR GET POST
 /user/login UserLoginR POST
 /user/register UserRegisterR POST
@@ -43,3 +43,5 @@
 /tagPost TagPostR POST
 /postTagRemove/#PostTagId RemoveTagPostR DELETE
 /categoryPostRemove/#CategoryPostId RemoveCategoryPostR DELETE
+/savePost/#PostId SavePostR POST
+/posts-year/#Integer PostsYearR GET

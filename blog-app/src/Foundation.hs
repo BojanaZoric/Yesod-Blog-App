@@ -70,7 +70,7 @@ data MenuTypes
 mkYesodData "App" $(parseRoutesFile "config/routes.yesodroutes")
 
 -- | A convenient synonym for creating forms.
-type Form x = Html -> MForm (HandlerFor App) (FormResult x, Widget)
+--type Form x = Html -> MForm (HandlerFor App) (FormResult x, Widget)
 
 -- | A convenient synonym for database access functions.
 type DB a = forall (m :: * -> *).
@@ -106,11 +106,11 @@ instance Yesod App where
 
 
     -- The page to be redirected to when authentication is required.
-    authRoute
+    {-authRoute
         :: App
         -> Maybe (Route App)
     authRoute _ = Just $ AuthR LoginR
-
+-}
     isAuthorized
         :: Route App  -- ^ The route the user is visiting.
         -> Bool       -- ^ Whether or not this is a "write" request.
@@ -138,17 +138,17 @@ instance Yesod App where
     isAuthorized PostsR _ = return Authorized
     isAuthorized (PostTagR _) True = isAuthor
     isAuthorized (PostTagR _) _ = return Authorized
-
     isAuthorized (CategoryPostR _) _ = return Authorized
-
     isAuthorized TagsR True = isAuthor
     isAuthorized TagsR _ = return Authorized
-
     isAuthorized (PostR _) True = isAuthor
     isAuthorized (PostR _) _ = return Authorized
-
     isAuthorized MyPostsR _ = isAuthor
-
+    isAuthorized (SavePostR _ ) _ = isAuthor
+    isAuthorized SavedPostsR _ = isAuthor
+    isAuthorized CommentR True = isAuthor
+    isAuthorized CommentR _ = return Authorized
+    isAuthorized _ _ = return Authorized
 
     -- This function creates static content files in the static folder
     -- and names them based on a hash of their content. This allows
@@ -214,27 +214,6 @@ instance YesodPersistRunner App where
 instance YesodAuth App where
     type AuthId App = UserId
 
-    -- Where to send a user after successful login
-    loginDest :: App -> Route App
-    loginDest _ = PostsR
-    -- Where to send a user after logout
-    logoutDest :: App -> Route App
-    logoutDest _ = PostsR
-    -- Override the above two destinations when a Referer: header is present
-    redirectToReferer :: App -> Bool
-    redirectToReferer _ = True
-
-    {-authenticate :: (MonadHandler m, HandlerSite m ~ App)
-                 => Creds App -> m (AuthenticationResult App)
-    authenticate creds = liftHandler $ runDB $ do
-        x <- getBy $ UniqueUser $ credsIdent creds
-        case x of
-            Just (Entity uid _) -> return $ Authenticated uid
-            Nothing -> Authenticated <$> insert User
-                { userUsername = credsIdent creds
-                , userPassword = Nothing
-                }
--}
     authenticate _ =
         maybe (UserError AuthMsg.InvalidLogin) Authenticated <$> maybeAuthId
     -- You can add other plugins like Google Email, email or OAuth here

@@ -15,7 +15,7 @@ data CreatePostDto = CreatePostDto {
     , content :: Text
     , image :: Text
     , published :: Bool
-}
+} deriving Show
 
 instance FromJSON CreatePostDto where
     parseJSON (Object v) = 

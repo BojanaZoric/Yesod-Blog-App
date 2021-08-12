@@ -21,9 +21,10 @@ Author json
 Comment json -- Adding "json" causes ToJSON and FromJSON instances to be derived.
     Id
     message Text
-    userId UserId Maybe
-    created_at UTCTime Maybe
+    userId UserId
+    created_at UTCTime
     postId PostId
+    parentComment CommentId Maybe
     deriving Eq
     deriving Show
 Tag json
@@ -46,6 +47,7 @@ Post json
     last_modified UTCTime
     authorId UserId
     UniquePost slug
+    deriving Show
 PostTag json
     Id
     postId PostId

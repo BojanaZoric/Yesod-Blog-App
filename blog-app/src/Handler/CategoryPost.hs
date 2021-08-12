@@ -34,6 +34,7 @@ getCategoryPostR categoryId = do
                             E.where_ $ relation E.^. CategoryPostCategoryId E.==. E.val categoryId
                             E.orderBy [E.asc (post E.^. PostId)]
                             E.limit (read (fromText $ limit) :: Int64)
+                            return post
                     returnJson (category, posts, total)
         Nothing ->  do
             posts <- runDB 
