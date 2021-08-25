@@ -24,7 +24,7 @@ getSavedPostsR = do
                                 $ E.select
                                 $ E.from $ \(post `E.InnerJoin` relation) -> do
                                     E.on $ post E.^. PostId E.==. relation E.^. PostSavePostId
-                                    E.where_ $ relation E.^. PostSaveAuthorId E.==. E.val currentUserId
+                                    E.where_ $ relation E.^. PostSaveAuthorId E.==. E.val currentUserId E.&&. (post E.^. PostPublished)
                                     E.limit (read (fromText $ limit) :: Int64)
                                     E.offset (read (fromText $ offset) :: Int64)
                                     return post
@@ -34,7 +34,7 @@ getSavedPostsR = do
                                     $ E.select
                                     $ E.from $ \(post `E.InnerJoin` relation) -> do
                                         E.on $ post E.^. PostId E.==. relation E.^. PostSavePostId
-                                        E.where_ $ relation E.^. PostSaveAuthorId E.==. E.val currentUserId
+                                        E.where_ $ relation E.^. PostSaveAuthorId E.==. E.val currentUserId E.&&. (post E.^. PostPublished)
                                         E.limit (read (fromText $ limit) :: Int64)
                                         return post
                             returnJson(posts, total)
@@ -43,6 +43,6 @@ getSavedPostsR = do
                         $ E.select
                         $ E.from $ \(post `E.InnerJoin` relation) -> do
                             E.on $ post E.^. PostId E.==. relation E.^. PostSavePostId
-                            E.where_ $ relation E.^. PostSaveAuthorId E.==. E.val currentUserId
+                            E.where_ $ relation E.^. PostSaveAuthorId E.==. E.val currentUserId E.&&. (post E.^. PostPublished)
                             return post
                     returnJson(posts, total)

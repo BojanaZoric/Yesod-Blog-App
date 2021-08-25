@@ -17,5 +17,24 @@ postCommentR = do
         Just currentUserId -> do
             now <- liftIO getCurrentTime
             let comment' = Comment (message commentDto) currentUserId now (postId commentDto) (parentComment commentDto)
-            insertedComment <- runDB $ insertEntity comment'
+            insertedComment <- runDB $ insert400 comment'
             returnJson insertedComment
+
+
+getPostCommentR :: PostId -> Handler Value
+getPostCommentR postId = do
+    comments <- runDB $ selectList ([PostId ==. postId])[]
+    returnJson comments
+
+postPostCommentR :: PostId -> Handler Value
+postPostCommentR postId = error ""
+
+deletePostCommentR :: PostId -> Handler Html
+deletePostCommentR postId = error "Not yet implemented: deletePostCommentR"
+
+
+deletePostCommentsR :: CommentId -> Handler Value
+deletePostCommentsR commentId = do
+    comment <- runDB $ get404 commentId
+    runDB $ delete commentId
+    returnJson comment

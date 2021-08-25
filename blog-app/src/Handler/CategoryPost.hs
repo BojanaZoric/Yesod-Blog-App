@@ -5,6 +5,8 @@ import Import
 import Text.Read
 import Data.Text.Conversions
 import qualified Database.Esqueleto as E
+import Prelude
+import Dto.PostCategoryDTO
 
 getCategoryPostR :: CategoryId -> Handler Value
 getCategoryPostR categoryId = do
@@ -44,3 +46,18 @@ getCategoryPostR categoryId = do
                     E.where_ $ relation E.^. CategoryPostCategoryId E.==. E.val categoryId
                     return post
             returnJson(category, posts, total)
+
+postPostCategoryR :: Handler Value
+postPostCategoryR = do
+    postCategory <- (requireCheckJsonBody :: Handler PostCategoryDto)
+    liftIO (Prelude.print postCategory)
+    let entity = CategoryPost (postId postCategory) (categoryId postCategory)
+    insertedPostCategory <- runDB $ insert400 entity
+    returnJson insertedPostCategory
+
+
+deleteRemoveCategoryPostR :: CategoryPostId -> Handler Value
+deleteRemoveCategoryPostR categoryPostId = do
+    postCategory <- runDB $ get404 categoryPostId
+    runDB $ delete categoryPostId
+    returnJson postCategory

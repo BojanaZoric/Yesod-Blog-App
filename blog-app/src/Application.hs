@@ -44,27 +44,16 @@ import System.Log.FastLogger                (defaultBufSize, newStdoutLoggerSet,
 import Handler.Common
 import Handler.Home
 import Handler.Comment
-import Handler.Tag
-import Handler.Category
-import Handler.Post
 import Handler.PostTag
 import Handler.Tags
 import Handler.Categories
-import Handler.PostComment
-import Handler.PostComments
 import Handler.Posts
-import Handler.Author
 import Handler.Authors
 import Handler.CategoryPost
-import Handler.PostLike
 import Handler.LikedPosts
 import Handler.SavedPosts
 import Handler.User
-import Handler.PostCategory
 import Handler.TagPost
-import Handler.RemoveTagPost
-import Handler.RemoveCategoryPost
-import Handler.SavePost
 import Handler.PostsYear
 
 import qualified Prelude                              as P

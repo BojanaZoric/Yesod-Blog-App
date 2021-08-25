@@ -7,7 +7,7 @@
 /favicon.ico FaviconR GET
 /robots.txt RobotsR GET
 
-/ HomeR GET
+--/ HomeR GET
 
 /comments CommentR POST
 
@@ -23,10 +23,14 @@
 /posts PostsR GET POST
 
 /post/#PostId/comments PostCommentR GET POST
-/post/#PostId/comment/#CommentId PostCommentsR DELETE
+/post-comment/#CommentId PostCommentsR DELETE
+
+/enable-post/#PostId EnablePostR GET
+/disable-post/#PostId DisablePostR GET
 
 /author/#AuthorId AuthorR GET PUT DELETE
 /authors AuthorsR GET POST
+/authors-year/#Integer AuthorsYearR GET
 /categoryPost/#CategoryId CategoryPostR GET
 
 /like/#PostId PostLikeR POST DELETE
