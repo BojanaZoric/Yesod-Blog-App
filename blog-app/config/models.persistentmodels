@@ -9,6 +9,7 @@ User json
     role Text
     created_at UTCTime
     updated_at UTCTime
+    enabled Bool
     UniqueUser username
     deriving Typeable
 Author json

@@ -66,10 +66,10 @@ getProfileR = do
             currentAuthor <- runDB $ getBy $ UniqueAuthorUser currentUserId
             case currentAuthor of
                 Nothing -> do
-                    let profile = ProfileDataDto ( userUsername currentUser) (userEmail currentUser) Nothing Nothing Nothing
+                    let profile = ProfileDataDto ( userUsername currentUser) (userEmail currentUser) Nothing Nothing Nothing (userEnabled currentUser)
                     returnJson profile
                 Just (Entity currentAuthor author) -> do
-                    let profile = ProfileDataDto ( userUsername currentUser) (userEmail currentUser) (Just $ authorFirstName author) (Just $ authorLastName author) ( Just $ authorBiography author)
+                    let profile = ProfileDataDto ( userUsername currentUser) (userEmail currentUser) (Just $ authorFirstName author) (Just $ authorLastName author) ( Just $ authorBiography author) (userEnabled currentUser)
                     returnJson profile
 
 getMyPostsR :: Handler Value
@@ -125,3 +125,22 @@ getMonth user = do
 
 frequency :: (Ord a) => [a] -> [(a, Int)]
 frequency xs = Data.Map.toList (Data.Map.fromListWith (+) [(x, 1) | x <- xs])
+
+
+getAuthorStatisticR :: Handler Value
+getAuthorStatisticR = do
+    activeAuthors <- runDB $ count[UserEnabled ==. True]
+    inactiveAuthors <- runDB $ count[UserEnabled ==. False]
+    returnJson (activeAuthors, inactiveAuthors)
+
+getUserInfoR :: UserId -> Handler Value
+getUserInfoR userId = do
+    currentUser <- runDB $ get404 userId
+    currentAuthor <- runDB $ getBy $ UniqueAuthorUser userId
+    case currentAuthor of
+        Nothing -> do
+            let profile = ProfileDataDto ( userUsername currentUser) (userEmail currentUser) Nothing Nothing Nothing (userEnabled currentUser)
+            returnJson profile
+        Just (Entity currentAuthor author) -> do
+            let profile = ProfileDataDto ( userUsername currentUser) (userEmail currentUser) (Just $ authorFirstName author) (Just $ authorLastName author) ( Just $ authorBiography author) (userEnabled currentUser)
+            returnJson profile

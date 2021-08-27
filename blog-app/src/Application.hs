@@ -190,16 +190,12 @@ appMain = do
     settings <- loadYamlSettingsArgs
         -- fall back to compile-time values, set to [] to require values at runtime
         [configSettingsYmlValue]
-
         -- allow environment variables to override
         useEnv
-
     -- Generate the foundation from the settings
     foundation <- makeFoundation settings
-
     -- Generate a WAI Application from the foundation
     app <- makeApplication foundation
-
     -- Run the application with Warp
     runSettings (warpSettings foundation) app
 

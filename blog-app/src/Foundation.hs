@@ -45,16 +45,6 @@ data App = App
     , appLogger      :: Logger
     }
 
-data MenuItem = MenuItem
-    { menuItemLabel :: Text
-    , menuItemRoute :: Route App
-    , menuItemAccessCallback :: Bool
-    }
-
-data MenuTypes
-    = NavbarLeft MenuItem
-    | NavbarRight MenuItem
-
 -- This is where we define all of the routes in our application. For a full
 -- explanation of the syntax, please see:
 -- http://www.yesodweb.com/book/routing-and-handlers
@@ -120,11 +110,9 @@ instance Yesod App where
     isAuthorized UserLoginR _ = return Authorized
     isAuthorized UserRegisterR _ = return Authorized
     isAuthorized CommentR _ = return Authorized
-    --isAuthorized HomeR _ = return Authorized
     isAuthorized FaviconR _ = return Authorized
     isAuthorized RobotsR _ = return Authorized
     isAuthorized (StaticR _) _ = return Authorized
-    --isAuthorized _ _ = return Authorized
     isAuthorized PostsR _ = return Authorized
     
 
@@ -148,6 +136,11 @@ instance Yesod App where
     isAuthorized SavedPostsR _ = isAuthor
     isAuthorized CommentR True = isAuthor
     isAuthorized CommentR _ = return Authorized
+    isAuthorized (AuthorsYearR _) _ = isAdmin
+    isAuthorized AuthorStatisticR _ = isAdmin
+    isAuthorized (PostsYearR _) _ = isAdmin
+    isAuthorized PostStatisticR _ = isAdmin
+    isAuthorized (UserInfoR _) _ = return Authorized
     isAuthorized _ _ = return Authorized
 
     -- This function creates static content files in the static folder

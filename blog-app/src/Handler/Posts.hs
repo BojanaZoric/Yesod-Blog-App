@@ -108,3 +108,10 @@ getDisablePostR postId = do
     let newPostToInsert = oldPost {postPublished = False}
     saved <- runDB $ replace postId newPostToInsert
     returnJson saved
+
+
+getPostStatisticR :: Handler Value
+getPostStatisticR = do
+    publishedPosts <- runDB $ count[PostPublished ==. True]
+    unpublishedPosts <- runDB $ count[PostPublished ==. False]
+    returnJson (publishedPosts, unpublishedPosts)
