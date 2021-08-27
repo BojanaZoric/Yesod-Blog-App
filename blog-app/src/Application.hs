@@ -44,26 +44,17 @@ import System.Log.FastLogger                (defaultBufSize, newStdoutLoggerSet,
 import Handler.Common
 import Handler.Home
 import Handler.Comment
-import Handler.Tag
-import Handler.Category
-import Handler.Post
 import Handler.PostTag
 import Handler.Tags
 import Handler.Categories
-import Handler.PostComment
-import Handler.PostComments
 import Handler.Posts
-import Handler.Author
 import Handler.Authors
 import Handler.CategoryPost
-import Handler.PostLike
 import Handler.LikedPosts
 import Handler.SavedPosts
 import Handler.User
-import Handler.PostCategory
 import Handler.TagPost
-import Handler.RemoveTagPost
-import Handler.RemoveCategoryPost
+import Handler.PostsYear
 
 import qualified Prelude                              as P
 import System.Environment (lookupEnv)
@@ -105,6 +96,7 @@ makeFoundation appSettings = do
         (sqlPoolSize $ appDatabaseConf appSettings)
 
     -- Perform database migration using our application's logging settings.
+    
     runLoggingT (runSqlPool (runMigration migrateAll) pool) logFunc
 
     -- Return the foundation
@@ -198,16 +190,12 @@ appMain = do
     settings <- loadYamlSettingsArgs
         -- fall back to compile-time values, set to [] to require values at runtime
         [configSettingsYmlValue]
-
         -- allow environment variables to override
         useEnv
-
     -- Generate the foundation from the settings
     foundation <- makeFoundation settings
-
     -- Generate a WAI Application from the foundation
     app <- makeApplication foundation
-
     -- Run the application with Warp
     runSettings (warpSettings foundation) app
 

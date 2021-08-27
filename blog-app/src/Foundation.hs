@@ -45,16 +45,6 @@ data App = App
     , appLogger      :: Logger
     }
 
-data MenuItem = MenuItem
-    { menuItemLabel :: Text
-    , menuItemRoute :: Route App
-    , menuItemAccessCallback :: Bool
-    }
-
-data MenuTypes
-    = NavbarLeft MenuItem
-    | NavbarRight MenuItem
-
 -- This is where we define all of the routes in our application. For a full
 -- explanation of the syntax, please see:
 -- http://www.yesodweb.com/book/routing-and-handlers
@@ -70,7 +60,7 @@ data MenuTypes
 mkYesodData "App" $(parseRoutesFile "config/routes.yesodroutes")
 
 -- | A convenient synonym for creating forms.
-type Form x = Html -> MForm (HandlerFor App) (FormResult x, Widget)
+--type Form x = Html -> MForm (HandlerFor App) (FormResult x, Widget)
 
 -- | A convenient synonym for database access functions.
 type DB a = forall (m :: * -> *).
@@ -106,11 +96,11 @@ instance Yesod App where
 
 
     -- The page to be redirected to when authentication is required.
-    authRoute
+    {-authRoute
         :: App
         -> Maybe (Route App)
     authRoute _ = Just $ AuthR LoginR
-
+-}
     isAuthorized
         :: Route App  -- ^ The route the user is visiting.
         -> Bool       -- ^ Whether or not this is a "write" request.
@@ -120,11 +110,9 @@ instance Yesod App where
     isAuthorized UserLoginR _ = return Authorized
     isAuthorized UserRegisterR _ = return Authorized
     isAuthorized CommentR _ = return Authorized
-    isAuthorized HomeR _ = return Authorized
     isAuthorized FaviconR _ = return Authorized
     isAuthorized RobotsR _ = return Authorized
     isAuthorized (StaticR _) _ = return Authorized
-    --isAuthorized _ _ = return Authorized
     isAuthorized PostsR _ = return Authorized
     
 
@@ -138,17 +126,22 @@ instance Yesod App where
     isAuthorized PostsR _ = return Authorized
     isAuthorized (PostTagR _) True = isAuthor
     isAuthorized (PostTagR _) _ = return Authorized
-
     isAuthorized (CategoryPostR _) _ = return Authorized
-
     isAuthorized TagsR True = isAuthor
     isAuthorized TagsR _ = return Authorized
-
     isAuthorized (PostR _) True = isAuthor
     isAuthorized (PostR _) _ = return Authorized
-
     isAuthorized MyPostsR _ = isAuthor
-
+    isAuthorized (SavePostR _ ) _ = isAuthor
+    isAuthorized SavedPostsR _ = isAuthor
+    isAuthorized CommentR True = isAuthor
+    isAuthorized CommentR _ = return Authorized
+    isAuthorized (AuthorsYearR _) _ = isAdmin
+    isAuthorized AuthorStatisticR _ = isAdmin
+    isAuthorized (PostsYearR _) _ = isAdmin
+    isAuthorized PostStatisticR _ = isAdmin
+    isAuthorized (UserInfoR _) _ = return Authorized
+    isAuthorized _ _ = return Authorized
 
     -- This function creates static content files in the static folder
     -- and names them based on a hash of their content. This allows
@@ -194,9 +187,9 @@ instance YesodBreadcrumbs App where
     breadcrumb
         :: Route App  -- ^ The route the user is visiting currently.
         -> Handler (Text, Maybe (Route App))
-    breadcrumb HomeR = return ("Home", Nothing)
-    breadcrumb (AuthR _) = return ("Login", Just HomeR)
-    breadcrumb ProfileR = return ("Profile", Just HomeR)
+    --breadcrumb HomeR = return ("Home", Nothing)
+    --breadcrumb (AuthR _) = return ("Login", Just HomeR)
+   -- breadcrumb ProfileR = return ("Profile", Just HomeR)
     breadcrumb  _ = return ("home", Nothing)
 
 -- How to run database actions.
@@ -214,27 +207,6 @@ instance YesodPersistRunner App where
 instance YesodAuth App where
     type AuthId App = UserId
 
-    -- Where to send a user after successful login
-    loginDest :: App -> Route App
-    loginDest _ = PostsR
-    -- Where to send a user after logout
-    logoutDest :: App -> Route App
-    logoutDest _ = PostsR
-    -- Override the above two destinations when a Referer: header is present
-    redirectToReferer :: App -> Bool
-    redirectToReferer _ = True
-
-    {-authenticate :: (MonadHandler m, HandlerSite m ~ App)
-                 => Creds App -> m (AuthenticationResult App)
-    authenticate creds = liftHandler $ runDB $ do
-        x <- getBy $ UniqueUser $ credsIdent creds
-        case x of
-            Just (Entity uid _) -> return $ Authenticated uid
-            Nothing -> Authenticated <$> insert User
-                { userUsername = credsIdent creds
-                , userPassword = Nothing
-                }
--}
     authenticate _ =
         maybe (UserError AuthMsg.InvalidLogin) Authenticated <$> maybeAuthId
     -- You can add other plugins like Google Email, email or OAuth here

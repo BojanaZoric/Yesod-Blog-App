@@ -9,6 +9,7 @@ User json
     role Text
     created_at UTCTime
     updated_at UTCTime
+    enabled Bool
     UniqueUser username
     deriving Typeable
 Author json
@@ -18,12 +19,14 @@ Author json
     biography Text
     userId UserId
     UniqueAuthorUser userId
-Comment json -- Adding "json" causes ToJSON and FromJSON instances to be derived.
+    deriving Show
+Comment json
     Id
     message Text
-    userId UserId Maybe
-    created_at UTCTime Maybe
+    userId UserId
+    created_at UTCTime
     postId PostId
+    parentComment CommentId Maybe
     deriving Eq
     deriving Show
 Tag json
@@ -46,6 +49,7 @@ Post json
     last_modified UTCTime
     authorId UserId
     UniquePost slug
+    deriving Show
 PostTag json
     Id
     postId PostId
@@ -56,12 +60,14 @@ CategoryPost json
     postId PostId
     categoryId CategoryId
     UniquePostCategory postId categoryId
+    deriving Show
 PostLike json
     Id
     postId PostId
     authorId UserId
-    --UniqueLike postId authorId
+    UniqueLike postId authorId
 PostSave json
     Id
     postId PostId
     authorId UserId
+    UniquePostSave postId authorId

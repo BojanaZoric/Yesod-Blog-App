@@ -39,5 +39,25 @@ getCategoriesR = do
 postCategoriesR :: Handler Value
 postCategoriesR = do
     category <- (requireCheckJsonBody :: Handler Category)
-    insertedCategory <- runDB $ insertEntity category
+    insertedCategory <- runDB $ insert400 category
     returnJson insertedCategory
+
+
+getCategoryR :: CategoryId -> Handler Value
+getCategoryR categoryId = do
+    maybeCategory <- runDB $ get404 categoryId
+    returnJson maybeCategory
+
+putCategoryR :: CategoryId -> Handler Value
+putCategoryR categoryId = do
+    newCategory <- (requireCheckJsonBody :: Handler Category)
+    oldCategory <- runDB $ get404 categoryId
+    let newCategoryToInsert = oldCategory { categoryName = categoryName newCategory} 
+    saved <- runDB $ replace categoryId newCategoryToInsert
+    returnJson saved
+
+deleteCategoryR :: CategoryId -> Handler Value
+deleteCategoryR categoryId = do
+    category <- runDB $ get404 categoryId
+    runDB $ delete categoryId
+    returnJson category

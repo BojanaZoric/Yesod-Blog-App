@@ -15,6 +15,7 @@ data ProfileDataDto = ProfileDataDto {
     , firstName :: Maybe Text
     , lastName :: Maybe Text
     , biography :: Maybe Text
+    , enabled :: Bool
 }
 
 instance FromJSON ProfileDataDto where
@@ -24,13 +25,15 @@ instance FromJSON ProfileDataDto where
                        <*> v .: "firstName"
                        <*> v .: "lastName"
                        <*> v .: "biography"
+                       <*> v .: "enabled"
     parseJSON _ = mzero
 
 instance ToJSON ProfileDataDto where
-    toJSON (ProfileDataDto username email firstName lastName biography) = 
+    toJSON (ProfileDataDto username email firstName lastName biography enabled) = 
         object [ "username" .= username
                 ,"email" .= email
                 ,"firstName" .= firstName
                 ,"lastName"  .= lastName
                 ,"biography" .= biography
+                ,"enabled" .= enabled
                ]

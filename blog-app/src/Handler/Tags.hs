@@ -42,3 +42,16 @@ postTagsR = do
     tag <- (requireCheckJsonBody :: Handler Tag)
     insertedTag <- runDB $ insertEntity tag
     returnJson insertedTag
+
+getTagR :: TagId -> Handler Value
+getTagR tagId = do
+    maybeTag <- runDB $ Import.get tagId
+    case maybeTag of
+        Nothing -> error "There is no tag with that id"
+        Just tag -> returnJson tag
+
+deleteTagR:: TagId -> Handler Value
+deleteTagR tagId = do
+    tag <- runDB $ get404 tagId
+    runDB $ delete tagId
+    returnJson tag
