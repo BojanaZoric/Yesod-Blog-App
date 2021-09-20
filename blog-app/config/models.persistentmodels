@@ -1,6 +1,3 @@
--- By default this file is used by `persistFileWith` in Model.hs (which is imported by Foundation.hs)
--- Syntax for this file here: https://github.com/yesodweb/persistent/blob/master/docs/Persistent-entity-syntax.md
-
 User json
     Id
     username Text
@@ -13,12 +10,12 @@ User json
     UniqueUser username
     deriving Typeable
 Author json
-    Id
     firstName Text
     lastName Text
     biography Text
     userId UserId
     UniqueAuthorUser userId
+    Primary userId
     deriving Show
 Comment json
     Id
@@ -43,7 +40,6 @@ Post json
     title Text
     slug Text
     content Text
-    image Text
     published Bool
     created_at UTCTime
     last_modified UTCTime
@@ -51,23 +47,18 @@ Post json
     UniquePost slug
     deriving Show
 PostTag json
-    Id
     postId PostId
     tagId TagId
     UniquePostTag postId tagId
+    Primary postId tagId
 CategoryPost json
-    Id
     postId PostId
     categoryId CategoryId
-    UniquePostCategory postId categoryId
-    deriving Show
-PostLike json
-    Id
-    postId PostId
-    authorId UserId
-    UniqueLike postId authorId
+    PostCategoryId postId categoryId
+    Primary postId categoryId
+    deriving Generic
 PostSave json
-    Id
     postId PostId
     authorId UserId
-    UniquePostSave postId authorId
+    Primary postId authorId
+    deriving Generic

@@ -56,8 +56,8 @@ postPostCategoryR = do
     returnJson insertedPostCategory
 
 
-deleteRemoveCategoryPostR :: CategoryPostId -> Handler Value
-deleteRemoveCategoryPostR categoryPostId = do
-    postCategory <- runDB $ get404 categoryPostId
-    runDB $ delete categoryPostId
+deleteRemoveCategoryPostR :: CategoryId -> PostId-> Handler Value
+deleteRemoveCategoryPostR categoryId postId = do
+    postCategory <- runDB $ getBy $ PostCategoryId postId categoryId
+    runDB $ deleteBy $ PostCategoryId postId categoryId
     returnJson postCategory

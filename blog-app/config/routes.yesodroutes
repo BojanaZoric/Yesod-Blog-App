@@ -50,7 +50,7 @@
 
 /postCategory PostCategoryR POST
 /tagPost TagPostR POST
-/postTagRemove/#PostTagId RemoveTagPostR DELETE
-/categoryPostRemove/#CategoryPostId RemoveCategoryPostR DELETE
+/postTagRemove/#TagId/#PostId RemoveTagPostR DELETE
+/categoryPostRemove/#CategoryId/#PostId RemoveCategoryPostR DELETE
 /savePost/#PostId SavePostR POST
 /posts-year/#Integer PostsYearR GET

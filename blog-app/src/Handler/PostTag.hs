@@ -55,8 +55,8 @@ deletePostTagR :: TagId -> Handler Value
 deletePostTagR tagId = error "Not yet implemented: deletePostTagR"
 
 
-deleteRemoveTagPostR :: PostTagId -> Handler Value
-deleteRemoveTagPostR postTagId = do
-    postTag <- runDB $ get404 postTagId
-    runDB $ delete postTagId
+deleteRemoveTagPostR :: TagId -> PostId -> Handler Value
+deleteRemoveTagPostR tagId postId = do
+    postTag <- runDB $ getBy $ UniquePostTag postId tagId
+    runDB $ deleteBy $ UniquePostTag postId tagId
     returnJson postTag

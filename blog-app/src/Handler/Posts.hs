@@ -51,7 +51,7 @@ postPostsR = do
         Nothing -> notAuthenticated
         Just currentUserId -> do
             now <- liftIO getCurrentTime
-            let post = Post (title postDto) (slug postDto) (content postDto) (image postDto) (published postDto) now now currentUserId
+            let post = Post (title postDto) (slug postDto) (content postDto) (published postDto) now now currentUserId
             insertedPost <- runDB $ insertEntity post
             returnJson insertedPost
 
@@ -91,7 +91,7 @@ putPostR postId  = do
     newPost <- (requireJsonBody :: Handler CreatePostDto)
     oldPost <- runDB $ get404 postId
     now <- liftIO getCurrentTime
-    let newPostToInsert = oldPost {postTitle = title newPost, postSlug = slug newPost, postContent = content newPost, postImage = image newPost, postPublished = published newPost, postLast_modified = now}
+    let newPostToInsert = oldPost {postTitle = title newPost, postSlug = slug newPost, postContent = content newPost, postPublished = published newPost, postLast_modified = now}
     saved <- runDB $ replace postId newPostToInsert
     returnJson saved
 

@@ -13,7 +13,6 @@ data CreatePostDto = CreatePostDto {
       title :: Text
     , slug :: Text
     , content :: Text
-    , image :: Text
     , published :: Bool
 } deriving Show
 
@@ -22,15 +21,13 @@ instance FromJSON CreatePostDto where
         CreatePostDto <$> v .: "title"
                       <*> v .: "slug"
                       <*> v .: "content"
-                      <*> v .: "image"
                       <*> v .: "published"
     parseJSON _ = mzero
 
 instance ToJSON CreatePostDto where
-    toJSON (CreatePostDto title slug content image published) = 
+    toJSON (CreatePostDto title slug content published) = 
         object [ "title" .= title
                 ,"slug" .= slug
                 ,"content" .= content
-                ,"image"  .= image
                 ,"published" .= published
                ]
