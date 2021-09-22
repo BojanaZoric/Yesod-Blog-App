@@ -144,3 +144,17 @@ getUserInfoR userId = do
         Just (Entity currentAuthor author) -> do
             let profile = ProfileDataDto ( userUsername currentUser) (userEmail currentUser) (Just $ authorFirstName author) (Just $ authorLastName author) ( Just $ authorBiography author) (userEnabled currentUser)
             returnJson profile
+
+getEnableAuthorR :: UserId -> Handler Value
+getEnableAuthorR userId = do
+    oldAuthor <- runDB $ get404 userId
+    let newAuthorToInsert = oldAuthor {userEnabled = True}
+    saved <- runDB $ replace userId newAuthorToInsert
+    returnJson saved
+
+getDisableAuthorR :: UserId -> Handler Value
+getDisableAuthorR userId = do
+    oldAuthor <- runDB $ get404 userId
+    let newAuthorToInsert = oldAuthor {userEnabled = False}
+    saved <- runDB $ replace userId newAuthorToInsert
+    returnJson saved

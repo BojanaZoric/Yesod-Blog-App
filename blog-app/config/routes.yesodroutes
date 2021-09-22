@@ -34,6 +34,10 @@
 /author/#AuthorId AuthorR GET PUT DELETE
 /authors AuthorsR GET POST
 /authors-year/#Integer AuthorsYearR GET
+
+/enable-author/#UserId EnableAuthorR GET
+/disable-author/#UserId DisableAuthorR GET
+
 /categoryPost/#CategoryId CategoryPostR GET
 
 /like/#PostId PostLikeR POST DELETE
