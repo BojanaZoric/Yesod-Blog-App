@@ -29,9 +29,6 @@ getPostCommentR postId = do
 postPostCommentR :: PostId -> Handler Value
 postPostCommentR postId = error ""
 
-deletePostCommentR :: PostId -> Handler Html
-deletePostCommentR postId = error "Not yet implemented: deletePostCommentR"
-
 
 deletePostCommentsR :: CommentId -> Handler Value
 deletePostCommentsR commentId = do

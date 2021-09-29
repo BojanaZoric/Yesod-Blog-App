@@ -60,5 +60,6 @@ CategoryPost json
 PostSave json
     postId PostId
     authorId UserId
+    PostSaveUnique postId authorId
     Primary postId authorId
     deriving Generic

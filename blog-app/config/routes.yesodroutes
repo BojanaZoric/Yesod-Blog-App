@@ -7,7 +7,6 @@
 /favicon.ico FaviconR GET
 /robots.txt RobotsR GET
 
---/ HomeR GET
 
 /comments CommentR POST
 
@@ -19,7 +18,7 @@
 
 /posttag/#TagId/ PostTagR GET POST DELETE
 
-/post/#PostId PostR GET PUT
+/post/#PostId PostR GET PUT DELETE
 /posts PostsR GET POST
 
 /post/#PostId/comments PostCommentR GET POST
@@ -40,8 +39,6 @@
 
 /categoryPost/#CategoryId CategoryPostR GET
 
-/like/#PostId PostLikeR POST DELETE
-/likedPosts/#AuthorId LikedPostsR GET
 /savedPosts SavedPostsR GET
 /user UserR GET POST
 /user/login UserLoginR POST
@@ -56,5 +53,5 @@
 /tagPost TagPostR POST
 /postTagRemove/#TagId/#PostId RemoveTagPostR DELETE
 /categoryPostRemove/#CategoryId/#PostId RemoveCategoryPostR DELETE
-/savePost/#PostId SavePostR POST
+/savePost/#PostId SavePostR POST DELETE
 /posts-year/#Integer PostsYearR GET

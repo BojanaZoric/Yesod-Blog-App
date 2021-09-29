@@ -59,5 +59,6 @@ putCategoryR categoryId = do
 deleteCategoryR :: CategoryId -> Handler Value
 deleteCategoryR categoryId = do
     category <- runDB $ get404 categoryId
+    runDB $ deleteWhere [CategoryPostCategoryId ==. categoryId]
     runDB $ delete categoryId
     returnJson category

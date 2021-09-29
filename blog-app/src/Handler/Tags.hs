@@ -53,5 +53,6 @@ getTagR tagId = do
 deleteTagR:: TagId -> Handler Value
 deleteTagR tagId = do
     tag <- runDB $ get404 tagId
+    runDB $ deleteWhere [PostTagTagId ==. tagId]
     runDB $ delete tagId
     returnJson tag

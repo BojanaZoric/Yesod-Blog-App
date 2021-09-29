@@ -42,8 +42,10 @@ postUserLoginR = do
     loginData <- (requireCheckJsonBody:: Handler Login)
     maybeUser <- runDB $ getBy $ UniqueUser $ loginUsername loginData
     case maybeUser of
-        Just (Entity userId user@User {..}) | validPwd ->
-            encodeUser userId user
+        Just (Entity userId user@User {..}) | validPwd -> do
+            if userEnabled == False
+                then error "Disabled"
+            else encodeUser userId user
             where validPwd = verifyPassword (loginPassword loginData) userPassword
         _ -> 
             error "Unauthorized"
@@ -86,7 +88,7 @@ postUserRegisterR = do
     insertedUser <- runDB $ insert400 user
     let author = Author (firstName registerData) (lastName registerData) (biography registerData) insertedUser
     insertedAuthor <- runDB $ insert400 author
-    returnJson insertedUser
+    returnJson insertedAuthor
 
 encodeUser :: UserId -> User -> Handler Value
 encodeUser userId User {..} = do
@@ -97,10 +99,6 @@ encodeUser userId User {..} = do
         , "username" .= userUsername
         , "token" .= token
         , "role" .= userRole
-        --, "bio" .= userBio
-        --, "image" .= userImage
-        --, "createdAt" .= userCreatedAt
-        --, "updatedAt" .= userUpdatedAt
         ]
     ]
     

@@ -69,7 +69,7 @@ getPostR postId = do
     liftIO (Prelude.print comments)
     let authorIds = Import.map (\(Entity _ q) -> commentUserId q) comments
     authors <- runDB $ selectList [AuthorUserId <-. authorIds] []
-    liftIO (Prelude.print authorIds)
+    liftIO (Prelude.print authors)
     let commentsAndAuthors = Import.zip comments authors
     categories <- runDB 
         $ E.select 
@@ -88,7 +88,7 @@ getPostR postId = do
 
 putPostR :: PostId -> Handler Value
 putPostR postId  = do
-    newPost <- (requireJsonBody :: Handler CreatePostDto)
+    newPost <- (requireCheckJsonBody :: Handler CreatePostDto)
     oldPost <- runDB $ get404 postId
     now <- liftIO getCurrentTime
     let newPostToInsert = oldPost {postTitle = title newPost, postSlug = slug newPost, postContent = content newPost, postPublished = published newPost, postLast_modified = now}
@@ -115,3 +115,23 @@ getPostStatisticR = do
     publishedPosts <- runDB $ count[PostPublished ==. True]
     unpublishedPosts <- runDB $ count[PostPublished ==. False]
     returnJson (publishedPosts, unpublishedPosts)
+
+deletePostR :: PostId -> Handler Value
+deletePostR postId = do
+    maybeCurrentUserId <- maybeAuthId
+    case maybeCurrentUserId of
+        Nothing -> notAuthenticated
+        Just currentUserId -> do
+            post <- runDB $ get404 postId
+            if (postAuthorId post) == currentUserId 
+                then completeRemovePost postId
+            else notAuthenticated
+            returnJson post 
+
+completeRemovePost :: PostId -> Handler ()
+completeRemovePost postId = do
+    runDB $ deleteWhere [PostTagPostId ==. postId]
+    runDB $ deleteWhere [CategoryPostPostId ==. postId]
+    runDB $ deleteWhere [PostSavePostId ==. postId]
+    runDB $ deleteWhere [CommentPostId ==. postId]
+    runDB $ delete postId

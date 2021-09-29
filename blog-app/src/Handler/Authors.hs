@@ -98,7 +98,11 @@ putAuthorR :: AuthorId -> Handler Value
 putAuthorR authorId = do
     newAuthor <- (requireCheckJsonBody :: Handler Author)
     oldAuthor <- runDB $ get404 authorId
-    let newAuthorToInsert = oldAuthor {authorFirstName = authorFirstName newAuthor, authorLastName = authorLastName newAuthor, authorBiography = authorBiography newAuthor}
+    let newAuthorToInsert = oldAuthor {
+        authorFirstName = authorFirstName newAuthor, 
+        authorLastName = authorLastName newAuthor, 
+        authorBiography = authorBiography newAuthor
+        }
     saved <- runDB $ replace authorId newAuthorToInsert
     returnJson saved
 

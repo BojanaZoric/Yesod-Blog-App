@@ -141,6 +141,8 @@ instance Yesod App where
     isAuthorized (PostsYearR _) _ = isAdmin
     isAuthorized PostStatisticR _ = isAdmin
     isAuthorized (UserInfoR _) _ = return Authorized
+    isAuthorized (EnableAuthorR _) _ = isAdmin
+    isAuthorized (DisableAuthorR _) _ = isAdmin
     isAuthorized _ _ = return Authorized
 
     -- This function creates static content files in the static folder
@@ -281,7 +283,7 @@ isAdmin = do
                 case currUser of
                     Nothing -> return AuthenticationRequired
                     Just cu -> do
-                        if userRole cu == "admin"
+                        if userRole cu == "admin" && userEnabled cu == True
                             then return Authorized
                         else return AuthenticationRequired
 
@@ -296,6 +298,6 @@ isAuthor = do
                 case currUser of
                     Nothing -> return AuthenticationRequired
                     Just cu -> do
-                        if userRole cu == "author"
+                        if userRole cu == "author" && userEnabled cu == True
                             then return Authorized
                         else return AuthenticationRequired

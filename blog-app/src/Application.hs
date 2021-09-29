@@ -50,7 +50,6 @@ import Handler.Categories
 import Handler.Posts
 import Handler.Authors
 import Handler.CategoryPost
-import Handler.LikedPosts
 import Handler.SavedPosts
 import Handler.User
 import Handler.TagPost
@@ -109,7 +108,6 @@ makeApplication foundation = do
     logWare <- makeLogWare foundation
     -- Create the WAI application and apply middlewares
     appPlain <- toWaiAppPlain foundation
-    settings <- getAppSettings
     return $ logWare $ defaultMiddlewaresNoLogging $ corsified appPlain
 
 corsified :: Middleware
