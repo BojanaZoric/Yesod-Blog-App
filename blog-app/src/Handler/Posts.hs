@@ -66,11 +66,9 @@ getPostR postId = do
         E.where_ (p E.^. PostId E.==. E.val postId)
         return (a)
     comments <- runDB $ selectList [CommentPostId ==. postId][] 
-    liftIO (Prelude.print comments)
     let authorIds = Import.map (\(Entity _ q) -> commentUserId q) comments
     authors <- runDB $ selectList [AuthorUserId <-. authorIds] []
-    liftIO (Prelude.print authors)
-    let commentsAndAuthors = Import.zip comments authors
+    let commentsAndAuthorsIds = Import.zip comments authorIds
     categories <- runDB 
         $ E.select 
         $ E.from $ \(category `E.InnerJoin` relation) -> do
@@ -83,7 +81,7 @@ getPostR postId = do
         E.on $ tag E.^. TagId E.==. relation E.^. PostTagTagId
         E.where_ $ relation E.^. PostTagPostId E.==. E.val postId
         return (tag, relation)
-    returnJson (maybePost, author, commentsAndAuthors, categories, tags)
+    returnJson (maybePost, author, commentsAndAuthorsIds, categories, tags, authors)
 
 
 putPostR :: PostId -> Handler Value
